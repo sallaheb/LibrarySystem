@@ -3,23 +3,24 @@ package com.nology;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByNames;
+import com.opencsv.bean.CsvBindByPosition;
 
 public class Books {
-    @CsvBindByName
+    @CsvBindByPosition(position = 0)
     private String Number;
-    @CsvBindByName
+    @CsvBindByPosition(position = 1)
     private String Title;
-    @CsvBindByName
+    @CsvBindByPosition(position = 2)
     private String Author;
-    @CsvBindByName
+    @CsvBindByPosition(position = 3)
     private String Genre;
-    @CsvBindByName
+    @CsvBindByPosition(position = 4)
     private String Subgenre;
-    @CsvBindByName
+    @CsvBindByPosition(position = 5)
     private String Publisher;
-    @CsvBindByName
+    @CsvBindByPosition(position = 6)
     private String Availability;
-    @CsvBindByName
+    @CsvBindByPosition(position = 7)
     private String NoOfTimesLoaned;
 
     public Books(String number, String title, String author, String genre, String subgenre, String publisher, String availability, String noOfTimesLoaned) {

@@ -89,10 +89,9 @@ public class Users {
         //the list that contains the String arrays
         List<Books> report = new ArrayList<>();
         for (Books book: BookList) {
-            System.out.println(book.getTitle());
+            System.out.println(book.getAvailability());
             if (book.getAvailability().contains("YES")) {
                 Collections.addAll(report, book);
-                System.out.println(book.getTitle());
             }
         }
         String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(report); // convert to JSON
