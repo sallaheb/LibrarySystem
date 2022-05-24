@@ -53,7 +53,7 @@ public class Admins {
         System.out.println(JsonConvertedBookList);
     }
 
-    public void writingFileForLoanedBooks(List<Book> BookList) throws IOException {
+    public void writingFileForLoanedBooks(List<Book> BookList, String AdminFileNotAv) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         List<Book> report = getReportLoanedBooks();
 
         for (Book book: BookList) {
@@ -62,21 +62,13 @@ public class Admins {
             }
         }
 
-        File file = new File("AdminReportUnavailableBooks.csv");
-        FileWriter fw = new FileWriter(file);
-        BufferedWriter bw = new BufferedWriter(fw);
+        File file = new File(AdminFileNotAv);
+        Writer writer = new FileWriter(file);
+        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
+        beanToCsv.write(report);
+        System.out.println("File has been created");
+        writer.close();
 
-        bw.write("Number,Title,Author,Genre,Subgenre, Publisher,Availability,noOfTimesLoaned");
-        bw.newLine();
-
-        for(int i=0;i<report.size();i++)
-        {
-            bw.write(report.get(i++).toString()+"," + "\n" + report.get(i).toString());
-            bw.newLine();
-        }
-        bw.close();
-        fw.close();
-        System.out.println("CSV file created succesfully.");
 
     }
 

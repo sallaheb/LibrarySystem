@@ -33,7 +33,7 @@ public class Main {
         Admins NewAdmin0 = new Admins("andrew", "2468");
         adminList.add(NewAdmin0);
         String AdminFileAv =  "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportAvailableBooks.csv";
-
+        String AdminFileNotAv = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportUnavailableBooks.csv";
 
         // setting up scanner and logic for library
 
@@ -166,7 +166,7 @@ public class Main {
                                     AdminUser.writingFileForAvailableBooks(BookList, AdminFileAv);
                                     break;
                                 case 4:
-                                    AdminUser.writingFileForLoanedBooks(BookList);
+                                    AdminUser.writingFileForLoanedBooks(BookList,AdminFileNotAv);
                                     break;
                             }
                             break;
@@ -191,23 +191,6 @@ public class Main {
         beanToCsv.write(BookList);
         System.out.println("File has been created");
         writer.close();
-
-
-//        File file = new File(CsvFile);
-//        FileWriter fw = new FileWriter(file);
-//        BufferedWriter bw = new BufferedWriter(fw);
-//
-//        bw.write("Number,Title,Author,Genre,Subgenre, Publisher,Availability,noOfTimesLoaned");
-//        bw.newLine();
-//
-//        for(int i=0;i<BookList.size();i++)
-//        {
-//            bw.write(BookList.get(i++).toString()+  "\n" + BookList.get(i).toString());
-//            bw.newLine();
-//        }
-//        bw.close();
-//        fw.close();
-//        System.out.println("CSV file created succesfully.");
 
     }
 
