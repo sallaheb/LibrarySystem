@@ -19,7 +19,7 @@ public class Main {
         String CsvFile = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\CSVdata.csv";
 
         List<Book> BookList = new ArrayList<>();
-        OpneCsvtoReadAndStoreData(CsvFile, BookList);
+        OpenCsvToReadAndStoreData(CsvFile, BookList);
 
 
         // user List instantiated to add user
@@ -94,42 +94,17 @@ public class Main {
                                switch (Options) {
 
                                 case 1:
-                                    cuurentUser.get(0).ListOfAvailableBooks(BookList);
+                                    ViewAvailableBooks(cuurentUser,BookList);
                                     break;
                                 case 2:
-                                    // Reads user file and add data onto array object
-                                    cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan( cuurentUser.get(0).getFileName(),  cuurentUser.get(0));
-                                    // Take user input
-                                    System.out.println("Please type in the full name of the book you would like to loan from the available list (case-sensitive)");
-                                    String BookTitle = s.next();
-                                    System.out.println(BookTitle);
-
-                                    // Method to Loan a book and add update arrays objects of general bookList and user specific books
-                                    cuurentUser.get(0).LoanABook(BookList, cuurentUser.get(0), BookTitle);
-                                    // Method to update changes in user specific files // overwriting user data
-                                    cuurentUser.get(0).OpenCsvMethodToWriteUserBooksOnLoan(cuurentUser.get(0));
-                                    //Method to update changes in the general bookList files  // overwriting general original data
-                                    OpneCsvtoWrtieAndStoreData(CsvFile, BookList);
-                                    System.out.println(s.nextLine());
+                                    BorrowABook(cuurentUser,BookList,s,CsvFile);
                                     break;
                                 case 3:
-                                    // Read user file and add data onto array object before viewing user specific books on loan
-                                    cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
-                                    cuurentUser.get(0).ListOfCurrentLoans();
+                                    ViewYourBooksOnLoan(cuurentUser);
+
                                     break;
                                 case 4:
-                                    // Read user file and add data onto array object before returning user specific books currently on loan
-                                    cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
-
-                                    // Take user input
-                                    System.out.println("Please type in the full name of the book you would like to return from the current list of borrowed books (case-sensitive)");
-                                    String BorrowedBookTitle = s.nextLine();
-                                    // Method to Loan a book and update arrays objects of general bookList and user specific books
-                                    cuurentUser.get(0).ReturnABook(BookList, cuurentUser.get(0), BorrowedBookTitle);
-                                    // Method to update changes in user specific files // overwriting user data
-                                    cuurentUser.get(0).OpenCsvMethodToWriteUserBooksOnLoan(cuurentUser.get(0));
-                                    //Method to update changes in the general bookList files  // overwriting general original data
-                                    OpneCsvtoWrtieAndStoreData(CsvFile, BookList);
+                                    ReturnABook(cuurentUser,BookList,s,CsvFile);
                                     break;
                             }
                            break;
@@ -182,8 +157,50 @@ public class Main {
 
     }
 
+    private static void ViewYourBooksOnLoan(List<Users> cuurentUser) throws CsvValidationException, IOException {
+        // Read user file and add data onto array object before viewing user specific books on loan
+        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
+        cuurentUser.get(0).ListOfCurrentLoans();
+    }
 
-    private static void OpneCsvtoWrtieAndStoreData(String CsvFile, List<Book> BookList) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void ViewAvailableBooks(List<Users> cuurentUser,List<Book> BookList) {
+        cuurentUser.get(0).ListOfAvailableBooks(BookList);
+    }
+
+    private static void ReturnABook(List<Users> cuurentUser,List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+        // Read user file and add data onto array object before returning user specific books currently on loan
+        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
+
+        // Take user input
+        System.out.println("Please type in the full name of the book you would like to return from the current list of borrowed books (case-sensitive)");
+        String BorrowedBookTitle = s.nextLine();
+        // Method to Loan a book and update arrays objects of general bookList and user specific books
+        cuurentUser.get(0).ReturnABook(BookList, cuurentUser.get(0), BorrowedBookTitle);
+        // Method to update changes in user specific files // overwriting user data
+        cuurentUser.get(0).OpenCsvMethodToWriteUserBooksOnLoan(cuurentUser.get(0));
+        //Method to update changes in the general bookList files  // overwriting general original data
+        OpenCsvtoWrtieAndStoreData(CsvFile, BookList);
+    }
+
+    private static void BorrowABook(List<Users> cuurentUser,List<Book> BookList, Scanner s, String CsvFile ) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+        // Reads user file and add data onto array object
+        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan( cuurentUser.get(0).getFileName(),  cuurentUser.get(0));
+        // Take user input
+        System.out.println("Please type in the full name of the book you would like to loan from the available list (case-sensitive)");
+        String BookTitle = s.next();
+        System.out.println(BookTitle);
+
+        // Method to Loan a book and add update arrays objects of general bookList and user specific books
+        cuurentUser.get(0).LoanABook(BookList, cuurentUser.get(0), BookTitle);
+        // Method to update changes in user specific files // overwriting user data
+        cuurentUser.get(0).OpenCsvMethodToWriteUserBooksOnLoan(cuurentUser.get(0));
+        //Method to update changes in the general bookList files  // overwriting general original data
+        OpenCsvtoWrtieAndStoreData(CsvFile, BookList);
+        System.out.println(s.nextLine());
+    }
+
+
+    private static void OpenCsvtoWrtieAndStoreData(String CsvFile, List<Book> BookList) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
 
         File file = new File(CsvFile);
         Writer writer = new FileWriter(file);
@@ -194,9 +211,8 @@ public class Main {
 
     }
 
-    private static void OpneCsvtoReadAndStoreData(String FilePath, List<Book> BookList) throws IOException, CsvValidationException {
-
-
+    private static void OpenCsvToReadAndStoreData(String FilePath, List<Book> BookList) throws IOException, CsvValidationException {
+        
         CSVParser csvParser = new CSVParserBuilder().withSeparator(',').withQuoteChar('\"').build();
 
         // Reading file //

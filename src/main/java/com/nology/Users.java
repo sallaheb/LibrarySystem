@@ -94,7 +94,6 @@ public class Users {
         //the list that contains the String arrays
         List<Book> report = new ArrayList<>();
         for (Book book: BookList) {
-            System.out.println(book.getAvailability());
             if (book.getAvailability().contains("YES")) {
                 Collections.addAll(report, book);
             }
