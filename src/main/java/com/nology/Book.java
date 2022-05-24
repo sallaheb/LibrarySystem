@@ -1,11 +1,9 @@
 package com.nology;
 
 
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvBindByNames;
 import com.opencsv.bean.CsvBindByPosition;
 
-public class Books {
+public class Book {
     @CsvBindByPosition(position = 0)
     private String Number;
     @CsvBindByPosition(position = 1)
@@ -23,7 +21,7 @@ public class Books {
     @CsvBindByPosition(position = 7)
     private String NoOfTimesLoaned;
 
-    public Books(String number, String title, String author, String genre, String subgenre, String publisher, String availability, String noOfTimesLoaned) {
+    public Book(String number, String title, String author, String genre, String subgenre, String publisher, String availability, String noOfTimesLoaned) {
         Number = number;
         Title = title;
         Author = author;

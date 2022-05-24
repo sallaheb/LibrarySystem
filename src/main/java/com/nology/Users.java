@@ -22,13 +22,13 @@ public class Users {
     private String name;
     private String password;
     private String fileName;
-    private List<Books> BooksOnLoan = new ArrayList<>();
+    private List<Book> bookOnLoan = new ArrayList<>();
 
-    public Users(String name, String password, String fileName, List<Books> booksOnLoan) {
+    public Users(String name, String password, String fileName, List<Book> bookOnLoan) {
         this.name = name;
         this.password = password;
         this.fileName = fileName;
-        BooksOnLoan = booksOnLoan;
+        this.bookOnLoan = bookOnLoan;
 
     }
 
@@ -48,12 +48,12 @@ public class Users {
         return password;
     }
 
-    public List<Books> getBooksOnLoan() {
-        return BooksOnLoan;
+    public List<Book> getBooksOnLoan() {
+        return bookOnLoan;
     }
 
-    public void LoanABook(@NotNull List<Books> BookList, Users user, String BookTitle) {
-        for (Books book : BookList) {
+    public void LoanABook(@NotNull List<Book> BookList, Users user, String BookTitle) {
+        for (Book book : BookList) {
             if (book.getTitle().contains(BookTitle) && book.getAvailability().equals("YES")) {
                 user.getBooksOnLoan().add(book);
                 book.setAvailability("No");
@@ -63,10 +63,10 @@ public class Users {
         }
     }
 
-    public void ReturnABook(@NotNull List<Books> BookList, Users user, String BookTitle) {
-        List<Books> BorrowedBooks = user.getBooksOnLoan();
+    public void ReturnABook(@NotNull List<Book> BookList, Users user, String BookTitle) {
+        List<Book> borrowedBooks = user.getBooksOnLoan();
 
-        for (Books book : BorrowedBooks) {
+        for (Book book : borrowedBooks) {
             if (book.getTitle().contains(BookTitle) ) {
                 user.getBooksOnLoan().remove(book);
             } else {
@@ -74,7 +74,7 @@ public class Users {
             }
         }
 
-        for (Books bookItem : BookList) {
+        for (Book bookItem : BookList) {
             if (bookItem.getTitle().contains(BookTitle) ) {
                 bookItem.setAvailability("No");
                 System.out.println(bookItem.getTitle() + "has been returned");
@@ -84,11 +84,11 @@ public class Users {
 
 
 
-    public void ListOfAvailableBooks(@NotNull List<Books> BookList) {
+    public void ListOfAvailableBooks(@NotNull List<Book> BookList) {
 
         //the list that contains the String arrays
-        List<Books> report = new ArrayList<>();
-        for (Books book: BookList) {
+        List<Book> report = new ArrayList<>();
+        for (Book book: BookList) {
             System.out.println(book.getAvailability());
             if (book.getAvailability().contains("YES")) {
                 Collections.addAll(report, book);
@@ -106,28 +106,28 @@ public class Users {
         // Line values for book rows //
         String[] Line;
         while ((Line = reader.readNext()) != null) {
-           user.getBooksOnLoan().add(new Books(Line[0],Line[1],Line[2],Line[3],Line[4],Line[5],Line[6],Line[7]));
+           user.getBooksOnLoan().add(new Book(Line[0],Line[1],Line[2],Line[3],Line[4],Line[5],Line[6],Line[7]));
         }
 
     }
 
      public void OpenCsvMethodToWriteUserBooksOnLoan(@NotNull Users user) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        List<Books> BorrowedBooks = user.getBooksOnLoan();
+        List<Book> borrowedBooks = user.getBooksOnLoan();
 
          File file = new File(user.getFileName());
          Writer writer = new FileWriter(file);
 
-         HeaderColumnNameMappingStrategy<Books> strategy = new HeaderColumnNameMappingStrategyBuilder<Books>().build();
-         strategy.setType(Books.class);
+         HeaderColumnNameMappingStrategy<Book> strategy = new HeaderColumnNameMappingStrategyBuilder<Book>().build();
+         strategy.setType(Book.class);
          strategy.setColumnOrderOnWrite(new ComparableComparator());
          StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
-         beanToCsv.write(BorrowedBooks);
+         beanToCsv.write(borrowedBooks);
          System.out.println("File has been created");
          writer.close();
     }
 
     public void ListOfCurrentLoans() {
-         List<Books>CurrentLoans = getBooksOnLoan();
+         List<Book>CurrentLoans = getBooksOnLoan();
          String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(CurrentLoans); // convert to JSON
          System.out.println(JsonConvertedBookList);
     }

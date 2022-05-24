@@ -1,7 +1,6 @@
 package com.nology;
 
 import com.opencsv.*;
-import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -19,10 +18,8 @@ public class Main {
         // Adding Data to List array
         String CsvFile = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\CSVdata.csv";
 
-        List<Books> BookList = new ArrayList<>();
+        List<Book> BookList = new ArrayList<>();
         OpneCsvtoReadAndStoreData(CsvFile, BookList);
-
-
 
 
         // user List instantiated to add user
@@ -35,8 +32,7 @@ public class Main {
         List<Admins> adminList = new ArrayList<>();
         Admins NewAdmin0 = new Admins("andrew", "2468");
         adminList.add(NewAdmin0);
-
-      String AdminFileAv =  "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportAvailableBooks.csv";
+        String AdminFileAv =  "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportAvailableBooks.csv";
 
 
         // setting up scanner and logic for library
@@ -187,7 +183,7 @@ public class Main {
     }
 
 
-    private static void OpneCsvtoWrtieAndStoreData(String CsvFile, List<Books> BookList) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void OpneCsvtoWrtieAndStoreData(String CsvFile, List<Book> BookList) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
 
         File file = new File(CsvFile);
         Writer writer = new FileWriter(file);
@@ -215,7 +211,7 @@ public class Main {
 
     }
 
-    private static void OpneCsvtoReadAndStoreData(String FilePath, List<Books> BookList) throws IOException, CsvValidationException {
+    private static void OpneCsvtoReadAndStoreData(String FilePath, List<Book> BookList) throws IOException, CsvValidationException {
 
 
         CSVParser csvParser = new CSVParserBuilder().withSeparator(',').withQuoteChar('\"').build();
@@ -227,7 +223,7 @@ public class Main {
         // Line values for book rows //
         String[] Line;
         while ((Line = reader.readNext()) != null) {
-           BookList.add(new Books(Line[0], Line[1], Line[2], Line[3], Line[4], Line[5],Line[6],Line[7]));
+           BookList.add(new Book(Line[0], Line[1], Line[2], Line[3], Line[4], Line[5],Line[6],Line[7]));
         }
     }
 }
