@@ -52,6 +52,12 @@ public class Users {
         return bookOnLoan;
     }
 
+    public void ListOfCurrentLoans() {
+        List<Book>CurrentLoans = getBooksOnLoan();
+        String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(CurrentLoans); // convert to JSON
+        System.out.println(JsonConvertedBookList);
+    }
+
     public void LoanABook(@NotNull List<Book> BookList, Users user, String BookTitle) {
         for (Book book : BookList) {
             if (book.getTitle().contains(BookTitle) && book.getAvailability().equals("YES")) {
@@ -81,7 +87,6 @@ public class Users {
             }
         }
     }
-
 
 
     public void ListOfAvailableBooks(@NotNull List<Book> BookList) {
@@ -126,9 +131,5 @@ public class Users {
          writer.close();
     }
 
-    public void ListOfCurrentLoans() {
-         List<Book>CurrentLoans = getBooksOnLoan();
-         String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(CurrentLoans); // convert to JSON
-         System.out.println(JsonConvertedBookList);
-    }
+
 }
