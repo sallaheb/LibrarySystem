@@ -57,7 +57,7 @@ public class Admins {
         List<Book> report = getReportLoanedBooks();
 
         for (Book book: BookList) {
-            if (book.getAvailability().equals("No")) {
+            if (book.getAvailability().contains("No")) {
                 Collections.addAll(report, book);
             }
         }
@@ -92,7 +92,6 @@ public class Admins {
         for (Book book: BookList) {
             if (book.getAvailability().contains("YES")) {
                 Collections.addAll(report, book);
-                System.out.println(book.getTitle());
             }
         }
 

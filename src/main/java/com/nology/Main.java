@@ -21,6 +21,7 @@ public class Main {
         List<Book> BookList = new ArrayList<>();
         OpenCsvToReadAndStoreData(CsvFile, BookList);
 
+        BookList.removeIf(book -> book.getTitle().equals("Number"));
 
         // user List instantiated to add user
         List<Users> userList = new ArrayList<>();
@@ -35,7 +36,7 @@ public class Main {
         String AdminFileAv =  "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportAvailableBooks.csv";
         String AdminFileNotAv = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportUnavailableBooks.csv";
 
-        // setting up scanner and logic for library
+        // setting up scanner and logic for library //
 
         Scanner s = new Scanner(System.in);
         boolean libraryIsRunning = true;
@@ -217,7 +218,7 @@ public class Main {
 
         // Reading file //
 
-        CSVReader reader = new CSVReaderBuilder(new FileReader(FilePath)).withCSVParser(csvParser).withSkipLines(1).build();
+        CSVReader reader = new CSVReaderBuilder(new FileReader(FilePath)).withCSVParser(csvParser).build();
 
         // Line values for book rows //
         String[] Line;
