@@ -39,13 +39,11 @@ public class Main {
         // setting up scanner and logic for library //
         Scanner s = new Scanner(System.in);
         boolean libraryIsRunning = true;
-
-
         while (libraryIsRunning) {
 
 
             int person = 0;
-            int Options;
+            int Options =0;
 
             System.out.println("Hello and Welcome"
                     + "\n if you are new user please type: 1"
@@ -70,69 +68,17 @@ public class Main {
                     break;
 
                 case 2:
-                    List<Users> cuurentUser = new ArrayList<>();
-
                     for (Users loggedUser : userList) {
+                        int attempts = 0;
                         System.out.println("please enter your username correctly(case sensitive)");
                         String name = s.next();
                         System.out.println("");
                         System.out.println("Please enter your login_password(case-sensitive)");
                         String passCode = s.next();
 
-                        if (loggedUser.getName().equals(name) && loggedUser.getPassword().equals(passCode)) {
-                            cuurentUser.add(loggedUser);
-                        }
-                    }
-
-                    boolean isAuthenticated = true;
-
-                    do {
-                        System.out.println("Please select the following options: " + cuurentUser.get(0).getName() +
-                                "\n To view available books type:  1 " +
-                                "\n To Borrow a new book type : 2) " +
-                                "\n To view your loaned books type:3 " +
-                                "\n  To Return a book type: 4" +
-                                "\n  To exit menu type: 5");
-
-                        Options = s.nextInt();
-
-                        switch (Options) {
-
-                            case 1:
-                                ViewAvailableBooks(cuurentUser, BookList);
-                                break;
-                            case 2:
-                                BorrowABook(cuurentUser, BookList, s, CsvFile);
-                                break;
-                            case 3:
-                                ViewYourBooksOnLoan(cuurentUser);
-
-                                break;
-                            case 4:
-                                ReturnABook(cuurentUser, BookList, s, CsvFile);
-                                break;
-                            case 5:
-                                isAuthenticated = false;
-                        }
-
-                    } while (isAuthenticated);
-
-
-                    break;
-                case 3:
-
-                    int attempts = 0;
-                    for (Admin AdminUser : adminList) {
-
-                        System.out.println("please enter your AdminUsername correctly(case sensitive)");
-                        String AdminUsername = s.next();
-                        System.out.println("");
-                        System.out.println("Please enter your login_password(case-sensitive)");
-                        String AdminPassCode = s.next();
-                        System.out.println("");
                         while (attempts < 4) {
                             attempts++;
-                            if (!AdminUser.getName().equals(AdminUsername) || !AdminUser.getPassword().equals(AdminPassCode)) {
+                            if (!loggedUser.getName().equals(name) || !loggedUser.getPassword().equals(passCode)) {
                                 if (attempts == 3) {
                                     System.out.println("you have exceeded no. attempts");
                                     s.close();
@@ -141,14 +87,79 @@ public class Main {
                                 } else {
                                     System.out.println("wrong entry");
                                     System.out.println("please enter your AdminUsername correctly(case sensitive)");
-                                    AdminUsername = s.next();
+                                    name = s.next();
                                     System.out.println("Please enter your login_password(case-sensitive)");
-                                    AdminPassCode = s.next();}
+                                    passCode = s.next();}
+
+                            } else break;
+                        }
+
+                        if (loggedUser.getName().equals(name) && loggedUser.getPassword().equals(passCode)) {
+                            
+                            boolean isAuthenticated = true;
+
+                            do {
+                                System.out.println("Please select the following options: " + loggedUser.getName() +
+                                        "\n To view available books type:  1 " +
+                                        "\n To Borrow a new book type : 2) " +
+                                        "\n To view your loaned books type:3 " +
+                                        "\n  To Return a book type: 4" +
+                                        "\n  To exit menu type: 5");
+
+                                Options = s.nextInt();
+
+                                switch (Options) {
+
+                                    case 1:
+                                        ViewAvailableBooks(loggedUser, BookList);
+                                        break;
+                                    case 2:
+                                        BorrowABook(loggedUser, BookList, s, CsvFile);
+                                        break;
+                                    case 3:
+                                        ViewYourBooksOnLoan(loggedUser);
+
+                                        break;
+                                    case 4:
+                                        ReturnABook(loggedUser, BookList, s, CsvFile);
+                                        break;
+                                    case 5:
+                                        isAuthenticated = false;
+                                }
+
+                            } while (isAuthenticated);
+                        }
+                    }
+
+                    break;
+                case 3:
+                    for (Admin AdminUser : adminList) {
+                        int attempts = 0;
+                        System.out.println("please enter your AdminUsername correctly(case sensitive)");
+                        String name = s.next();
+                        System.out.println("");
+                        System.out.println("Please enter your login_password(case-sensitive)");
+                        String passCode = s.next();
+                        System.out.println("");
+                        while (attempts < 4) {
+                            attempts++;
+                            if (!AdminUser.getName().equals(name) || !AdminUser.getPassword().equals(passCode)) {
+                                if (attempts == 3) {
+                                    System.out.println("you have exceeded no. attempts");
+                                    s.close();
+                                    libraryIsRunning = false;
+                                    break;
+                                } else {
+                                    System.out.println("wrong entry");
+                                    System.out.println("please enter your AdminUsername correctly(case sensitive)");
+                                    name = s.next();
+                                    System.out.println("Please enter your login_password(case-sensitive)");
+                                    passCode = s.next();}
 
                                 } else break;
                         }
 
-                        if (AdminUser.getName().equals(AdminUsername) && AdminUser.getPassword().equals(AdminPassCode)) {
+                        if (AdminUser.getName().equals(name) && AdminUser.getPassword().equals(passCode)) {
 
                             boolean isAuthorised = true;
 
@@ -175,6 +186,7 @@ public class Main {
                                         AdminUser.writingFileForAvailableBooks(BookList, AdminFileAv);
                                         break;
                                     case 4:
+                                        // read and store data before printing report
                                         AdminUser.writingFileForLoanedBooks(BookList, AdminFileNotAv);
                                         break;
                                     case 5:
@@ -191,43 +203,43 @@ public class Main {
         }
     }
 
-    private static void ViewYourBooksOnLoan(List<Users> cuurentUser) throws CsvValidationException, IOException {
+    private static void ViewYourBooksOnLoan(Users loggedUser) throws CsvValidationException, IOException {
         // Read user file and add data onto array object before viewing user specific books on loan
-        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
-        cuurentUser.get(0).ListOfCurrentLoans();
+        loggedUser.OpenCsvToReadAndStoreUserBooksOnLoan(loggedUser.getFileName(), loggedUser);
+        loggedUser.ListOfCurrentLoans();
     }
 
-    private static void ViewAvailableBooks(List<Users> cuurentUser, List<Book> BookList) {
-        cuurentUser.get(0).ListOfAvailableBooks(BookList);
+    private static void ViewAvailableBooks(Users loggedUser, List<Book> BookList) {
+        loggedUser.ListOfAvailableBooks(BookList);
     }
 
-    private static void ReturnABook(List<Users> cuurentUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void ReturnABook(Users loggedUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         // Read user file and add data onto array object before returning user specific books currently on loan
-        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
+        loggedUser.OpenCsvToReadAndStoreUserBooksOnLoan(loggedUser.getFileName(), loggedUser);
 
         // Take user input
         System.out.println("Please type in the full name of the book you would like to return from the current list of borrowed books (case-sensitive)");
         String BorrowedBookTitle = s.nextLine();
         // Method to Loan a book and update arrays objects of general bookList and user specific books
-        cuurentUser.get(0).ReturnABook(BookList, cuurentUser.get(0), BorrowedBookTitle);
+        loggedUser.ReturnABook(BookList, loggedUser, BorrowedBookTitle);
         // Method to update changes in user specific files // overwriting user data
-        cuurentUser.get(0).OpenCsvMethodToWriteUserBooksOnLoan(cuurentUser.get(0));
+        loggedUser.OpenCsvMethodToWriteUserBooksOnLoan(loggedUser);
         //Method to update changes in the general bookList files  // overwriting general original data
         OpenCsvtoWrtieAndStoreData(CsvFile, BookList);
     }
 
-    private static void BorrowABook(List<Users> cuurentUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void BorrowABook(Users loggedUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         // Reads user file and add data onto array object
-        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
+        loggedUser.OpenCsvToReadAndStoreUserBooksOnLoan(loggedUser.getFileName(), loggedUser);
         // Take user input
         System.out.println("Please type in the full name of the book you would like to loan from the available list (case-sensitive)");
         String BookTitle = s.next();
         System.out.println(BookTitle);
 
         // Method to Loan a book and add update arrays objects of general bookList and user specific books
-        cuurentUser.get(0).LoanABook(BookList, cuurentUser.get(0), BookTitle);
+        loggedUser.LoanABook(BookList, loggedUser, BookTitle);
         // Method to update changes in user specific files // overwriting user data
-        cuurentUser.get(0).OpenCsvMethodToWriteUserBooksOnLoan(cuurentUser.get(0));
+        loggedUser.OpenCsvMethodToWriteUserBooksOnLoan(loggedUser);
         //Method to update changes in the general bookList files  // overwriting general original data
         OpenCsvtoWrtieAndStoreData(CsvFile, BookList);
         System.out.println(s.nextLine());
