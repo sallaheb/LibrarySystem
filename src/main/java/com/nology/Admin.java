@@ -1,10 +1,13 @@
 package com.nology;
 
 import com.google.gson.GsonBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.opencsv.bean.HeaderColumnNameMappingStrategyBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import org.apache.commons.collections.comparators.ComparableComparator;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -12,14 +15,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Admins {
+public class Admin {
     private String name;
     private String password;
     private List<Book> reportLoanedBooks = new ArrayList<>();
     private List<Book> reportAvailableBooks = new ArrayList<>();
 
 
-    public Admins(String name, String password) {
+    public Admin(String name, String password) {
         this.name = name;
         this.password = password;
     }
@@ -64,11 +67,15 @@ public class Admins {
 
         File file = new File(AdminFileNotAv);
         Writer writer = new FileWriter(file);
-        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
+
+        HeaderColumnNameMappingStrategy<Book> strategy = new HeaderColumnNameMappingStrategyBuilder<Book>().build();
+        strategy.setType(Book.class);
+        strategy.setColumnOrderOnWrite(new ComparableComparator());
+
+        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
         beanToCsv.write(report);
         System.out.println("File has been created");
         writer.close();
-
 
     }
 
@@ -97,7 +104,12 @@ public class Admins {
 
         File file = new File(AdminFileAv);
         Writer writer = new FileWriter(file);
-        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
+
+        HeaderColumnNameMappingStrategy<Book> strategy = new HeaderColumnNameMappingStrategyBuilder<Book>().build();
+        strategy.setType(Book.class);
+        strategy.setColumnOrderOnWrite(new ComparableComparator());
+
+        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
         beanToCsv.write(report);
         System.out.println("File has been created");
         writer.close();

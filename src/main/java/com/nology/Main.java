@@ -16,28 +16,27 @@ public class Main {
 
         // Reading csv
         // Adding Data to List array
+        //Removing first-line from list
         String CsvFile = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\CSVdata.csv";
-
         List<Book> BookList = new ArrayList<>();
         OpenCsvToReadAndStoreData(CsvFile, BookList);
-
         BookList.removeIf(book -> book.getTitle().equals("Number"));
 
         // user List instantiated to add user
         List<Users> userList = new ArrayList<>();
-        Users NewUser0 = new Users("dave", "2342","davefile.csv", new ArrayList<>());
+        Users NewUser0 = new Users("dave", "2342", "davefile.csv", new ArrayList<>());
         userList.add(NewUser0);
 
 
         // Admin List instantiated to add Admin
-        List<Admins> adminList = new ArrayList<>();
-        Admins NewAdmin0 = new Admins("andrew", "2468");
+        // File Paths created to store reports
+        List<Admin> adminList = new ArrayList<>();
+        Admin NewAdmin0 = new Admin("andrew", "2468");
         adminList.add(NewAdmin0);
-        String AdminFileAv =  "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportAvailableBooks.csv";
+        String AdminFileAv = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportAvailableBooks.csv";
         String AdminFileNotAv = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportUnavailableBooks.csv";
 
         // setting up scanner and logic for library //
-
         Scanner s = new Scanner(System.in);
         boolean libraryIsRunning = true;
 
@@ -54,7 +53,7 @@ public class Main {
                     + "\n if you are an admin please type: 3");
 
 
-               person = s.nextInt();
+            person = s.nextInt();
 
 
             switch (person) {
@@ -71,7 +70,7 @@ public class Main {
                     break;
 
                 case 2:
-                    List<Users> cuurentUser= new ArrayList<>();
+                    List<Users> cuurentUser = new ArrayList<>();
 
                     for (Users loggedUser : userList) {
                         System.out.println("please enter your username correctly(case sensitive)");
@@ -82,35 +81,48 @@ public class Main {
 
                         if (loggedUser.getName().equals(name) && loggedUser.getPassword().equals(passCode)) {
                             cuurentUser.add(loggedUser);
-
-                            System.out.println("Please select the following options: " + loggedUser.getName() +
-                                    "\n To view available books type:  1 " +
-                                    "\n To Borrow a new book type : 2) " +
-                                    "\n To view your loaned books type:3 " +
-                                    "\n  To Return a book type: 4");
                         }
                     }
-                    Options = s.nextInt();
 
-                               switch (Options) {
+                    boolean isAuthenticated = true;
 
-                                case 1:
-                                    ViewAvailableBooks(cuurentUser,BookList);
-                                    break;
-                                case 2:
-                                    BorrowABook(cuurentUser,BookList,s,CsvFile);
-                                    break;
-                                case 3:
-                                    ViewYourBooksOnLoan(cuurentUser);
+                    do {
+                        System.out.println("Please select the following options: " + cuurentUser.get(0).getName() +
+                                "\n To view available books type:  1 " +
+                                "\n To Borrow a new book type : 2) " +
+                                "\n To view your loaned books type:3 " +
+                                "\n  To Return a book type: 4" +
+                                "\n  To exit menu type: 5");
 
-                                    break;
-                                case 4:
-                                    ReturnABook(cuurentUser,BookList,s,CsvFile);
-                                    break;
-                            }
-                           break;
+                        Options = s.nextInt();
+
+                        switch (Options) {
+
+                            case 1:
+                                ViewAvailableBooks(cuurentUser, BookList);
+                                break;
+                            case 2:
+                                BorrowABook(cuurentUser, BookList, s, CsvFile);
+                                break;
+                            case 3:
+                                ViewYourBooksOnLoan(cuurentUser);
+
+                                break;
+                            case 4:
+                                ReturnABook(cuurentUser, BookList, s, CsvFile);
+                                break;
+                            case 5:
+                                isAuthenticated = false;
+                        }
+
+                    } while (isAuthenticated);
+
+
+                    break;
                 case 3:
-                    for (Admins AdminUser : adminList) {
+
+                    int attempts = 0;
+                    for (Admin AdminUser : adminList) {
 
                         System.out.println("please enter your AdminUsername correctly(case sensitive)");
                         String AdminUsername = s.next();
@@ -118,44 +130,65 @@ public class Main {
                         System.out.println("Please enter your login_password(case-sensitive)");
                         String AdminPassCode = s.next();
                         System.out.println("");
+                        while (attempts < 4) {
+                            attempts++;
+                            if (!AdminUser.getName().equals(AdminUsername) || !AdminUser.getPassword().equals(AdminPassCode)) {
+                                if (attempts == 3) {
+                                    System.out.println("you have exceeded no. attempts");
+                                    s.close();
+                                    libraryIsRunning = false;
+                                    break;
+                                } else {
+                                    System.out.println("wrong entry");
+                                    System.out.println("please enter your AdminUsername correctly(case sensitive)");
+                                    AdminUsername = s.next();
+                                    System.out.println("Please enter your login_password(case-sensitive)");
+                                    AdminPassCode = s.next();}
+
+                                } else break;
+                        }
 
                         if (AdminUser.getName().equals(AdminUsername) && AdminUser.getPassword().equals(AdminPassCode)) {
-                            System.out.println("");
-                            System.out.println("Please select the following options: " +
-                                    "\n To view available books type:  1 " +
-                                    "\n To view loaned books type: 2 " +
-                                    "\n To create a report of available books type:  3 " +
-                                    "\n To create a report of loaned books type:  4 ");
 
-                            int select = s.nextInt();
-                            System.out.println("");
+                            boolean isAuthorised = true;
 
-                            switch (select) {
-                                case 1:
-                                    AdminUser.ListOfAvailableBooks(BookList);
-                                    break;
-                                case 2:
-                                    AdminUser.ListOfBooksOnLoan(BookList);
-                                    break;
-                                case 3:
-                                    // read and store data before printing report
-                                    AdminUser.writingFileForAvailableBooks(BookList, AdminFileAv);
-                                    break;
-                                case 4:
-                                    AdminUser.writingFileForLoanedBooks(BookList,AdminFileNotAv);
-                                    break;
-                            }
-                            break;
+                            do {
+                                System.out.println("Please select the following options: " +
+                                        "\n To view available books type:  1 " +
+                                        "\n To view loaned books type: 2 " +
+                                        "\n To create a report of available books type:  3 " +
+                                        "\n To create a report of loaned books type:  4 +" +
+                                        "\n To exit menu type: 5");
 
+                                int select = s.nextInt();
+                                System.out.println("");
+
+                                switch (select) {
+                                    case 1:
+                                        AdminUser.ListOfAvailableBooks(BookList);
+                                        break;
+                                    case 2:
+                                        AdminUser.ListOfBooksOnLoan(BookList);
+                                        break;
+                                    case 3:
+                                        // read and store data before printing report
+                                        AdminUser.writingFileForAvailableBooks(BookList, AdminFileAv);
+                                        break;
+                                    case 4:
+                                        AdminUser.writingFileForLoanedBooks(BookList, AdminFileNotAv);
+                                        break;
+                                    case 5:
+                                        isAuthorised = false;
+                                }
+
+                            } while (isAuthorised);
                         }
                     }
                     break;
                 default:
-                    System.out.println("sorry try again");
+                    System.out.println("try again");;
             }
-
         }
-
     }
 
     private static void ViewYourBooksOnLoan(List<Users> cuurentUser) throws CsvValidationException, IOException {
@@ -164,11 +197,11 @@ public class Main {
         cuurentUser.get(0).ListOfCurrentLoans();
     }
 
-    private static void ViewAvailableBooks(List<Users> cuurentUser,List<Book> BookList) {
+    private static void ViewAvailableBooks(List<Users> cuurentUser, List<Book> BookList) {
         cuurentUser.get(0).ListOfAvailableBooks(BookList);
     }
 
-    private static void ReturnABook(List<Users> cuurentUser,List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void ReturnABook(List<Users> cuurentUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         // Read user file and add data onto array object before returning user specific books currently on loan
         cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
 
@@ -183,9 +216,9 @@ public class Main {
         OpenCsvtoWrtieAndStoreData(CsvFile, BookList);
     }
 
-    private static void BorrowABook(List<Users> cuurentUser,List<Book> BookList, Scanner s, String CsvFile ) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void BorrowABook(List<Users> cuurentUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         // Reads user file and add data onto array object
-        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan( cuurentUser.get(0).getFileName(),  cuurentUser.get(0));
+        cuurentUser.get(0).OpenCsvToReadAndStoreUserBooksOnLoan(cuurentUser.get(0).getFileName(), cuurentUser.get(0));
         // Take user input
         System.out.println("Please type in the full name of the book you would like to loan from the available list (case-sensitive)");
         String BookTitle = s.next();
@@ -213,7 +246,7 @@ public class Main {
     }
 
     private static void OpenCsvToReadAndStoreData(String FilePath, List<Book> BookList) throws IOException, CsvValidationException {
-        
+
         CSVParser csvParser = new CSVParserBuilder().withSeparator(',').withQuoteChar('\"').build();
 
         // Reading file //
@@ -223,7 +256,7 @@ public class Main {
         // Line values for book rows //
         String[] Line;
         while ((Line = reader.readNext()) != null) {
-           BookList.add(new Book(Line[0], Line[1], Line[2], Line[3], Line[4], Line[5],Line[6],Line[7]));
+            BookList.add(new Book(Line[0], Line[1], Line[2], Line[3], Line[4], Line[5], Line[6], Line[7]));
         }
     }
 }
