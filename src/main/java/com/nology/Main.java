@@ -248,9 +248,13 @@ public class Main {
         // Method to Loan a book and update arrays objects of general bookList and user specific books
         loggedUser.ReturnABook(books, loggedUser, BorrowedBookTitle);
         // Method to update changes in user specific files // overwriting user data
-        loggedUser.OpenCsvMethodToWriteUserBooksOnLoan(loggedUser);
+        List<Book> LoanedBooks = loggedUser.getBooksOnLoan();
+        CsvReader.writeBooksToCsv(loggedUser.getFileName(),LoanedBooks);
+//        loggedUser.OpenCsvMethodToWriteUserBooksOnLoan(loggedUser);
         //Method to update changes in the general bookList files  // overwriting general original data
-        OpenCsvtoWrtieAndStoreData(CsvFile, books);
+        List<Book> MainBookList = loggedUser.getBooks();
+        CsvReader.writeBooksToCsv(CsvFile,MainBookList);
+//        OpenCsvtoWrtieAndStoreData(CsvFile, books);
     }
 
     private static void BorrowABook(User loggedUser, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
