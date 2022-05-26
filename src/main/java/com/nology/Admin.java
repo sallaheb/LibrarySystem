@@ -20,12 +20,14 @@ public class Admin {
     private String password;
     private List<Book> reportLoanedBooks = new ArrayList<>();
     private List<Book> reportAvailableBooks = new ArrayList<>();
+    private Book books;
 
 
     public Admin(String name, String password) {
         this.name = name;
         this.password = password;
     }
+
 
     public String getName() {
         return name;
@@ -43,76 +45,26 @@ public class Admin {
         return reportAvailableBooks;
     }
 
-    public void ListOfBooksOnLoan(@NotNull List<Book> BookList) {
-        //the list that contains the String arrays
-        List<Book> report = getReportLoanedBooks();
-        for (Book book: BookList) {
-            if (book.getAvailability().contains("No")) {
-                Collections.addAll(report, book);
-            }
-        }
-
-        String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(report); // convert to JSON
+    public void ListOfBooksOnLoanJSON() {
+        //List of Books in JSON
+        String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(reportLoanedBooks); // convert to JSON
         System.out.println(JsonConvertedBookList);
     }
 
-    public void writingFileForLoanedBooks(List<Book> BookList, String AdminFileNotAv) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        List<Book> report = getReportLoanedBooks();
-
-        for (Book book: BookList) {
-            if (book.getAvailability().contains("No")) {
-                Collections.addAll(report, book);
-            }
-        }
-
-        File file = new File(AdminFileNotAv);
-        Writer writer = new FileWriter(file);
-
-        HeaderColumnNameMappingStrategy<Book> strategy = new HeaderColumnNameMappingStrategyBuilder<Book>().build();
-        strategy.setType(Book.class);
-        strategy.setColumnOrderOnWrite(new ComparableComparator());
-
-        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
-        beanToCsv.write(report);
-        System.out.println("File has been created");
-        writer.close();
-
-    }
-
-    public void ListOfAvailableBooks(@NotNull List<Book> BookList) {
-
-        //the list that contains the String arrays
-        List<Book> report = getReportAvailableBooks();
-        for (Book book: BookList) {
-            if (book.getAvailability().contains("YES")) {
-                Collections.addAll(report, book);
-            }
-        }
-        String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(report); // convert to JSON
+    public void ListOfAvailableBooksJSON() {
+        //List of Books in JSON
+        String JsonConvertedBookList = new GsonBuilder().setPrettyPrinting().create().toJson(reportAvailableBooks); // convert to JSON
         System.out.println(JsonConvertedBookList);
-
     }
 
-    public  void  writingFileForAvailableBooks (List<Book> BookList, String AdminFileAv) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        List<Book> report = getReportAvailableBooks();
-
-        for (Book book: BookList) {
-            if (book.getAvailability().contains("YES")) {
-                Collections.addAll(report, book);
-            }
-        }
-
-        File file = new File(AdminFileAv);
-        Writer writer = new FileWriter(file);
-
-        HeaderColumnNameMappingStrategy<Book> strategy = new HeaderColumnNameMappingStrategyBuilder<Book>().build();
-        strategy.setType(Book.class);
-        strategy.setColumnOrderOnWrite(new ComparableComparator());
-
-        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
-        beanToCsv.write(report);
-        System.out.println("File has been created");
-        writer.close();
-
+    public void addAvailableBooks(List<Book> books) {
+        books.stream()
+                .filter(book -> book.getAvailability().contains("YES"))
+                .forEach(book -> Collections.addAll(reportAvailableBooks, book));
+    }
+    public void addBooksOnLoan(List<Book> books) {
+        books.stream()
+                .filter(book -> book.getAvailability().contains("No"))
+                .forEach(book -> Collections.addAll(reportLoanedBooks, book));
     }
 }

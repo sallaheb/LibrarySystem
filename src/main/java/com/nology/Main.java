@@ -23,16 +23,16 @@ public class Main {
         BookList.removeIf(book -> book.getTitle().equals("Number"));
 
         // user List instantiated to add user
-        List<Users> userList = new ArrayList<>();
-        Users NewUser0 = new Users("dave", "2342", "davefile.csv", new ArrayList<>());
-        userList.add(NewUser0);
+        List<User> userList = new ArrayList<>();
+        User NewUser = new User("dave", "2342", "davefile.csv", new ArrayList<>());
+        userList.add(NewUser);
 
 
         // Admin List instantiated to add Admin
         // File Paths created to store reports
         List<Admin> adminList = new ArrayList<>();
-        Admin NewAdmin0 = new Admin("andrew", "2468");
-        adminList.add(NewAdmin0);
+        Admin NewAdmin = new Admin("andrew", "2468");
+        adminList.add(NewAdmin);
         String AdminFileAv = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportAvailableBooks.csv";
         String AdminFileNotAv = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\AdminReportUnavailableBooks.csv";
 
@@ -63,12 +63,12 @@ public class Main {
                     System.out.println("Please enter your login_password");
                     String login_password = s.next();
                     System.out.println("");
-                    userList.add(new Users(username, login_password, username + "file.csv", new ArrayList<>()));
+                    userList.add(new User(username, login_password, username + "file.csv", new ArrayList<>()));
                     System.out.println("You have successfully created an account.You can now log in using the main page");
                     break;
 
                 case 2:
-                    for (Users loggedUser : userList) {
+                    for (User loggedUser : userList) {
                         int attempts = 0;
                         System.out.println("please enter your username correctly(case sensitive)");
                         String name = s.next();
@@ -100,31 +100,27 @@ public class Main {
 
                             do {
                                 System.out.println("Please select the following options: " + loggedUser.getName() +
-                                        "\n To view available books type:  1 " +
-                                        "\n To Borrow a new book type : 2) " +
-                                        "\n To view your loaned books type:3 " +
-                                        "\n  To Return a book type: 4" +
-                                        "\n  To exit menu type: 5");
+                                        "\n To Borrow a new book type : 1) " +
+                                        "\n To view your loaned books type:2 " +
+                                        "\n  To Return a book type: 3" +
+                                        "\n  To exit menu type: 4");
 
                                 Options = s.nextInt();
 
                                 switch (Options) {
 
                                     case 1:
-                                        ViewAvailableBooks(loggedUser, BookList);
+                                        BorrowABook(loggedUser, s, CsvFile);
                                         break;
                                     case 2:
-                                        BorrowABook(loggedUser, BookList, s, CsvFile);
+                                        ViewYourBooksOnLoan(loggedUser);
                                         break;
                                     case 3:
-                                        ViewYourBooksOnLoan(loggedUser);
-
+                                        ReturnABook(loggedUser, s, CsvFile);
                                         break;
                                     case 4:
-                                        ReturnABook(loggedUser, BookList, s, CsvFile);
-                                        break;
-                                    case 5:
                                         isAuthenticated = false;
+                                        break;
                                 }
 
                             } while (isAuthenticated);
@@ -176,18 +172,20 @@ public class Main {
 
                                 switch (select) {
                                     case 1:
-                                        AdminUser.ListOfAvailableBooks(BookList);
+                                        ViewAllAvailableBooks(CsvFile, AdminUser);
                                         break;
                                     case 2:
-                                        AdminUser.ListOfBooksOnLoan(BookList);
+                                        ViewAllBooksOnLoan(CsvFile, AdminUser);
                                         break;
                                     case 3:
                                         // read and store data before printing report
-                                        AdminUser.writingFileForAvailableBooks(BookList, AdminFileAv);
+                                        CreateAdminReportAvailableBooks(CsvFile,AdminFileAv,AdminUser);
+//                                        AdminUser.writingFileForAvailableBooks(BookList, AdminFileAv);
                                         break;
                                     case 4:
                                         // read and store data before printing report
-                                        AdminUser.writingFileForLoanedBooks(BookList, AdminFileNotAv);
+                                        CreateAdminReportLoanedBooks(CsvFile,AdminFileNotAv,AdminUser);
+//                                        AdminUser.writingFileForLoanedBooks(BookList, AdminFileNotAv);
                                         break;
                                     case 5:
                                         isAuthorised = false;
@@ -203,45 +201,79 @@ public class Main {
         }
     }
 
-    private static void ViewYourBooksOnLoan(Users loggedUser) throws CsvValidationException, IOException {
+    private static void CreateAdminReportLoanedBooks(String CsvFile, String AdminFileNotAv, Admin AdminUser) throws CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, IOException, CsvValidationException {
+        List<Book> books = CsvReader.getBooksFromCsv(CsvFile);
+        AdminUser.addBooksOnLoan(books);
+        List<Book> LoanedBooks = AdminUser.getReportLoanedBooks();
+        CsvReader.writeBooksToCsv(AdminFileNotAv,LoanedBooks);
+    }
+
+    private static void CreateAdminReportAvailableBooks(String CsvFile, String AdminFileAv, Admin AdminUser) throws CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, IOException, CsvValidationException {
+        List<Book> books = CsvReader.getBooksFromCsv(CsvFile);
+        AdminUser.addAvailableBooks(books);
+        List<Book> AvailableBooks = AdminUser.getReportAvailableBooks();
+        CsvReader.writeBooksToCsv(AdminFileAv,AvailableBooks);
+    }
+
+    private static void ViewAllBooksOnLoan(String CsvFile, Admin AdminUser) throws CsvValidationException, IOException {
+        List<Book> books = CsvReader.getBooksFromCsv(CsvFile);
+        AdminUser.addBooksOnLoan(books);
+        AdminUser.ListOfBooksOnLoanJSON();
+    }
+
+    private static void ViewAllAvailableBooks(String CsvFile, Admin AdminUser) throws CsvValidationException, IOException {
+        List<Book> books = CsvReader.getBooksFromCsv(CsvFile);
+        AdminUser.addAvailableBooks(books);
+        AdminUser.ListOfAvailableBooksJSON();
+    }
+
+    private static void ViewYourBooksOnLoan(User loggedUser) throws CsvValidationException, IOException {
         // Read user file and add data onto array object before viewing user specific books on loan
-        loggedUser.OpenCsvToReadAndStoreUserBooksOnLoan(loggedUser.getFileName(), loggedUser);
+        List<Book> books = CsvReader.getBooksFromCsv(loggedUser.getFileName());
+        loggedUser.addBooks(books);
+
+       // loggedUser.getBooksFromCsv(loggedUser.getFileName(), loggedUser);
         loggedUser.ListOfCurrentLoans();
     }
 
-    private static void ViewAvailableBooks(Users loggedUser, List<Book> BookList) {
-        loggedUser.ListOfAvailableBooks(BookList);
-    }
-
-    private static void ReturnABook(Users loggedUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void ReturnABook(User loggedUser,Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         // Read user file and add data onto array object before returning user specific books currently on loan
-        loggedUser.OpenCsvToReadAndStoreUserBooksOnLoan(loggedUser.getFileName(), loggedUser);
+        List<Book> books = CsvReader.getBooksFromCsv(loggedUser.getFileName());
+        loggedUser.addBooks(books);
+        //loggedUser.getBooksFromCsv(loggedUser.getFileName(), loggedUser);
 
         // Take user input
         System.out.println("Please type in the full name of the book you would like to return from the current list of borrowed books (case-sensitive)");
         String BorrowedBookTitle = s.nextLine();
         // Method to Loan a book and update arrays objects of general bookList and user specific books
-        loggedUser.ReturnABook(BookList, loggedUser, BorrowedBookTitle);
+        loggedUser.ReturnABook(books, loggedUser, BorrowedBookTitle);
         // Method to update changes in user specific files // overwriting user data
         loggedUser.OpenCsvMethodToWriteUserBooksOnLoan(loggedUser);
         //Method to update changes in the general bookList files  // overwriting general original data
-        OpenCsvtoWrtieAndStoreData(CsvFile, BookList);
+        OpenCsvtoWrtieAndStoreData(CsvFile, books);
     }
 
-    private static void BorrowABook(Users loggedUser, List<Book> BookList, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    private static void BorrowABook(User loggedUser, Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         // Reads user file and add data onto array object
-        loggedUser.OpenCsvToReadAndStoreUserBooksOnLoan(loggedUser.getFileName(), loggedUser);
+        List<Book> books = CsvReader.getBooksFromCsv(loggedUser.getFileName());
+        loggedUser.addBooks(books);
+
+       // loggedUser.getBooksFromCsv(loggedUser.getFileName(), loggedUser);
         // Take user input
         System.out.println("Please type in the full name of the book you would like to loan from the available list (case-sensitive)");
         String BookTitle = s.next();
         System.out.println(BookTitle);
 
         // Method to Loan a book and add update arrays objects of general bookList and user specific books
-        loggedUser.LoanABook(BookList, loggedUser, BookTitle);
-        // Method to update changes in user specific files // overwriting user data
-        loggedUser.OpenCsvMethodToWriteUserBooksOnLoan(loggedUser);
-        //Method to update changes in the general bookList files  // overwriting general original data
-        OpenCsvtoWrtieAndStoreData(CsvFile, BookList);
+        loggedUser.LoanABook(books, loggedUser, BookTitle);
+        // Method to enable data persistence overwriting
+        List<Book> LoanedBooks = loggedUser.getBooksOnLoan();
+        CsvReader.writeBooksToCsv(loggedUser.getFileName(),LoanedBooks);
+//        loggedUser.OpenCsvMethodToWriteUserBooksOnLoan(loggedUser);
+        //Method to update changes in the general bookList files// Data persistence
+        List<Book> MainBookList = loggedUser.getBooks();
+        CsvReader.writeBooksToCsv(CsvFile,MainBookList);
+//        OpenCsvtoWrtieAndStoreData(CsvFile, books);
         System.out.println(s.nextLine());
     }
 
