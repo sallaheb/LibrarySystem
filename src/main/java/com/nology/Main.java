@@ -14,13 +14,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException, CsvValidationException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
 
-        // Reading csv
-        // Adding Data to List array
-        //Removing first-line from list
+         //CSV original path
         String CsvFile = "C:\\Users\\709887M2A\\nology\\LibrarySystem\\CSVdata.csv";
-        List<Book> BookList = new ArrayList<>();
-        OpenCsvToReadAndStoreData(CsvFile, BookList);
-        BookList.removeIf(book -> book.getTitle().equals("Number"));
 
         // user List instantiated to add user
         List<User> userList = new ArrayList<>();
@@ -29,7 +24,7 @@ public class Main {
 
 
         // Admin List instantiated to add Admin
-        // File Paths created to store reports
+        // File Paths created to store Admin reports
         List<Admin> adminList = new ArrayList<>();
         Admin NewAdmin = new Admin("andrew", "2468");
         adminList.add(NewAdmin);
@@ -281,32 +276,6 @@ public class Main {
         System.out.println(s.nextLine());
     }
 
-
-    private static void OpenCsvtoWrtieAndStoreData(String CsvFile, List<Book> BookList) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-
-        File file = new File(CsvFile);
-        Writer writer = new FileWriter(file);
-        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
-        beanToCsv.write(BookList);
-        System.out.println("File has been created");
-        writer.close();
-
-    }
-
-    private static void OpenCsvToReadAndStoreData(String FilePath, List<Book> BookList) throws IOException, CsvValidationException {
-
-        CSVParser csvParser = new CSVParserBuilder().withSeparator(',').withQuoteChar('\"').build();
-
-        // Reading file //
-
-        CSVReader reader = new CSVReaderBuilder(new FileReader(FilePath)).withCSVParser(csvParser).build();
-
-        // Line values for book rows //
-        String[] Line;
-        while ((Line = reader.readNext()) != null) {
-            BookList.add(new Book(Line[0], Line[1], Line[2], Line[3], Line[4], Line[5], Line[6], Line[7]));
-        }
-    }
 }
 
 

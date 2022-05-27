@@ -38,10 +38,6 @@ public class User {
         return name;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
     public String getFileName() {
         return fileName;
     }
@@ -60,57 +56,36 @@ public class User {
         System.out.println(JsonConvertedBookList);
     }
 
+    public void addBooks(List<Book> books) {
+        this.books.addAll(books);
+    }
+
     public void LoanABook(@NotNull List<Book> BookList, User user, String BookTitle) {
-        for (Book book : BookList) {
-            if (book.getTitle().contains(BookTitle) && book.getAvailability().equals("YES")) {
-                user.getBooksOnLoan().add(book);
-                book.setAvailability("No");
-                System.out.println(book.getTitle() + "has been borrowed");
-                book.setNoOfTimesLoaned(String.valueOf(Integer.parseInt(book.getNoOfTimesLoaned()) + 1));;
-            }
-        }
+        BookList.stream().filter(book -> book.getTitle().contains(BookTitle) && book.getAvailability().equals("YES")).forEach(book -> {
+            user.getBooksOnLoan().add(book);
+            book.setAvailability("No");
+            System.out.println(book.getTitle() + "has been borrowed");
+            book.setNoOfTimesLoaned(String.valueOf(Integer.parseInt(book.getNoOfTimesLoaned()) + 1));
+        });
     }
 
     public void ReturnABook(@NotNull List<Book> BookList, User user, String BookTitle) {
         List<Book> borrowedBooks = user.getBooksOnLoan();
 
-        for (Book book : borrowedBooks) {
-            if (book.getTitle().contains(BookTitle) ) {
+        borrowedBooks.forEach(book -> {
+            if (book.getTitle().contains(BookTitle)) {
                 user.getBooksOnLoan().remove(book);
             } else {
                 System.out.println("Book Name Not Found");
             }
-        }
+        });
 
-        for (Book bookItem : BookList) {
-            if (bookItem.getTitle().contains(BookTitle) ) {
-                bookItem.setAvailability("No");
-                System.out.println(bookItem.getTitle() + "has been returned");
-            }
-        }
+        BookList.stream().filter(bookItem -> bookItem.getTitle().contains(BookTitle)).forEach(bookItem -> {
+            bookItem.setAvailability("No");
+            System.out.println(bookItem.getTitle() + "has been returned");
+        });
     }
 
-
-
-    public void addBooks(List<Book> books) {
-        this.books.addAll(books);
-    }
-
-
-     public void OpenCsvMethodToWriteUserBooksOnLoan(@NotNull User user) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        List<Book> borrowedBooks = user.getBooksOnLoan();
-
-         File file = new File(user.getFileName());
-         Writer writer = new FileWriter(file);
-
-         HeaderColumnNameMappingStrategy<Book> strategy = new HeaderColumnNameMappingStrategyBuilder<Book>().build();
-         strategy.setType(Book.class);
-         strategy.setColumnOrderOnWrite(new ComparableComparator());
-         StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
-         beanToCsv.write(borrowedBooks);
-         System.out.println("File has been created");
-         writer.close();
-    }
 
 
 }

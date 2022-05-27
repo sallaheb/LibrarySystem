@@ -20,7 +20,6 @@ public class Admin {
     private String password;
     private List<Book> reportLoanedBooks = new ArrayList<>();
     private List<Book> reportAvailableBooks = new ArrayList<>();
-    private Book books;
 
 
     public Admin(String name, String password) {
