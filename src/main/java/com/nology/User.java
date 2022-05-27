@@ -60,17 +60,27 @@ public class User {
         this.books.addAll(books);
     }
 
-    public void LoanABook(@NotNull List<Book> BookList, User user, String BookTitle) {
-        BookList.stream().filter(book -> book.getTitle().contains(BookTitle) && book.getAvailability().equals("YES")).forEach(book -> {
-            user.getBooksOnLoan().add(book);
-            book.setAvailability("No");
-            System.out.println(book.getTitle() + "has been borrowed");
-            book.setNoOfTimesLoaned(String.valueOf(Integer.parseInt(book.getNoOfTimesLoaned()) + 1));
-        });
+    public void addBooksOnLoan(List<Book> books) {
+        books.stream()
+                .filter(book -> book.getAvailability().contains("No"))
+                .forEach(book -> Collections.addAll(bookOnLoan, book));
     }
 
-    public void ReturnABook(@NotNull List<Book> BookList, User user, String BookTitle) {
+    public void LoanABook(@NotNull User user, String BookTitle) {
+        List<Book> BookList = user.getBooks();
+        for (Book book : BookList) {
+            if (book.getTitle().contains(BookTitle) && book.getAvailability().equals("YES")) {
+                user.getBooksOnLoan().add(book);
+                book.setAvailability("No");
+                System.out.println(book.getTitle() + "has been borrowed");
+                book.setNoOfTimesLoaned(String.valueOf(Integer.parseInt(book.getNoOfTimesLoaned()) + 1));
+            }
+        }
+    }
+
+    public void ReturnABook(User user, String BookTitle) {
         List<Book> borrowedBooks = user.getBooksOnLoan();
+        List<Book> BookList = user.getBooks();
 
         borrowedBooks.forEach(book -> {
             if (book.getTitle().contains(BookTitle)) {

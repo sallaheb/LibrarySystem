@@ -22,7 +22,6 @@ public class Main {
         User NewUser = new User("dave", "2342", "davefile.csv", new ArrayList<>());
         userList.add(NewUser);
 
-
         // Admin List instantiated to add Admin
         // File Paths created to store Admin reports
         List<Admin> adminList = new ArrayList<>();
@@ -108,7 +107,7 @@ public class Main {
                                         BorrowABook(loggedUser, s, CsvFile);
                                         break;
                                     case 2:
-                                        ViewYourBooksOnLoan(loggedUser);
+                                        ViewYourBooksOnLoan(CsvFile,loggedUser);
                                         break;
                                     case 3:
                                         ReturnABook(loggedUser, s, CsvFile);
@@ -222,26 +221,29 @@ public class Main {
         AdminUser.ListOfAvailableBooksJSON();
     }
 
-    private static void ViewYourBooksOnLoan(User loggedUser) throws CsvValidationException, IOException {
+    private static void ViewYourBooksOnLoan(String CsvFile, User loggedUser) throws CsvValidationException, IOException {
         // Read user file and add data onto array object before viewing user specific books on loan
-        List<Book> books = CsvReader.getBooksFromCsv(loggedUser.getFileName());
+        List<Book> books = CsvReader.getBooksFromCsv(CsvFile);
         loggedUser.addBooks(books);
 
-       // loggedUser.getBooksFromCsv(loggedUser.getFileName(), loggedUser);
+        loggedUser.addBooksOnLoan(books);
         loggedUser.ListOfCurrentLoans();
     }
 
     private static void ReturnABook(User loggedUser,Scanner s, String CsvFile) throws CsvValidationException, IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         // Read user file and add data onto array object before returning user specific books currently on loan
-        List<Book> books = CsvReader.getBooksFromCsv(loggedUser.getFileName());
+        List<Book> books = CsvReader.getBooksFromCsv(CsvFile);
         loggedUser.addBooks(books);
+
         //loggedUser.getBooksFromCsv(loggedUser.getFileName(), loggedUser);
+        // Add books on loan list
+        loggedUser.addBooksOnLoan(books);
 
         // Take user input
         System.out.println("Please type in the full name of the book you would like to return from the current list of borrowed books (case-sensitive)");
         String BorrowedBookTitle = s.nextLine();
         // Method to Loan a book and update arrays objects of general bookList and user specific books
-        loggedUser.ReturnABook(books, loggedUser, BorrowedBookTitle);
+        loggedUser.ReturnABook(loggedUser, BorrowedBookTitle);
         // Method to update changes in user specific files // overwriting user data
         List<Book> LoanedBooks = loggedUser.getBooksOnLoan();
         CsvReader.writeBooksToCsv(loggedUser.getFileName(),LoanedBooks);
@@ -258,13 +260,14 @@ public class Main {
         loggedUser.addBooks(books);
 
        // loggedUser.getBooksFromCsv(loggedUser.getFileName(), loggedUser);
+
         // Take user input
         System.out.println("Please type in the full name of the book you would like to loan from the available list (case-sensitive)");
         String BookTitle = s.next();
         System.out.println(BookTitle);
 
         // Method to Loan a book and add update arrays objects of general bookList and user specific books
-        loggedUser.LoanABook(books, loggedUser, BookTitle);
+        loggedUser.LoanABook(loggedUser, BookTitle);
         // Method to enable data persistence overwriting
         List<Book> LoanedBooks = loggedUser.getBooksOnLoan();
         CsvReader.writeBooksToCsv(loggedUser.getFileName(),LoanedBooks);
